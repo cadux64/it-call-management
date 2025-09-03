@@ -148,14 +148,18 @@
         }
 
         .tickets-container {
+            margin: 0 auto;
+            max-width: 95%;
+            min-height: 140px;
+        }
+        
+        .section-container {
             background: white;
             border-radius: 8px;
             overflow-x: auto;
             overflow-y: visible;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin: 0 auto;
-            max-width: 95%;
-            min-height: 140px;
+            margin-bottom: 30px;
         }
 
         .tickets-table {
@@ -211,15 +215,21 @@
             background: #e3f2fd !important;
             font-weight: bold;
             text-align: center;
-            padding: 8px;
+            padding: 12px 8px;
             color: #1565c0;
             border-bottom: 2px solid #bbdefb;
+            border-top: 3px solid #1976d2;
         }
 
         .group-header td {
             background: #e3f2fd !important;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .group-header:first-of-type {
+            border-top: none;
         }
 
         .ticket-row {
@@ -359,25 +369,20 @@
             font-weight: bold;
         }
 
-        .ticket-actions {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-        }
-
-        .ticket-actions {
-            display: flex;
-            gap: 3px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
 
         .ticket-actions button {
-            padding: 3px 6px;
+            padding: 4px 8px;
             font-size: 0.65rem;
-            border-radius: 3px;
-            min-width: 50px;
+            border-radius: 4px;
+            min-width: 55px;
             white-space: nowrap;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
         }
 
         .btn-secondary {
@@ -503,6 +508,107 @@
             display: flex;
             gap: 10px;
             justify-content: flex-end;
+        }
+
+        .edit-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .edit-modal.active {
+            display: flex;
+        }
+
+        .edit-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .edit-modal h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .edit-modal .form-group {
+            margin-bottom: 20px;
+        }
+
+        .edit-modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .edit-channels {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .edit-channel-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .edit-channel-checkbox input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .btn-edit {
+            background: #6c757d;
+            color: white;
+            order: 999;
+        }
+
+        .btn-edit:hover {
+            background: #495057;
+        }
+
+        .btn-delete {
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 2px 4px;
+            font-size: 0.7rem;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-right: 8px;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+        }
+
+        .btn-delete:hover {
+            background: #cc0000;
+        }
+
+        .ticket-actions {
+            display: flex;
+            gap: 3px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            min-height: 30px;
+            width: 100%;
         }
 
         @media (max-width: 1024px) {
@@ -668,6 +774,49 @@
         </div>
     </div>
 
+    <div class="edit-modal" id="editModal">
+        <div class="edit-modal-content">
+            <h3>✏️ Editar Chamado</h3>
+            <div class="form-group">
+                <label for="editTicketNumber">Número do Chamado:</label>
+                <input type="text" id="editTicketNumber" placeholder="Ex: TI-2024-001">
+            </div>
+            
+            <div class="form-group">
+                <label for="editClientName">Nome do Cliente:</label>
+                <input type="text" id="editClientName" placeholder="Nome do solicitante">
+            </div>
+            
+            <div class="form-group">
+                <label for="editDescription">Descrição:</label>
+                <textarea id="editDescription" rows="3" placeholder="Breve descrição do problema"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Canais de Contato Disponíveis:</label>
+                <div class="edit-channels">
+                    <div class="edit-channel-checkbox">
+                        <input type="checkbox" id="editWhatsapp">
+                        <label for="editWhatsapp"><img src="icons/whatsapp.png" alt="WhatsApp" style="width: 20px; height: 20px;"></label>
+                    </div>
+                    <div class="edit-channel-checkbox">
+                        <input type="checkbox" id="editSlack">
+                        <label for="editSlack"><img src="icons/slack.png" alt="Slack" style="width: 20px; height: 20px;"></label>
+                    </div>
+                    <div class="edit-channel-checkbox">
+                        <input type="checkbox" id="editGooglechat">
+                        <label for="editGooglechat"><img src="icons/google-chat.png" alt="Google Chat" style="width: 20px; height: 20px;"></label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="edit-modal-buttons">
+                <button class="btn-secondary" onclick="closeEditModal()">Cancelar</button>
+                <button onclick="confirmEdit()">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
     <audio id="alertSound" preload="auto">
         <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTG" type="audio/wav">
     </audio>
@@ -676,6 +825,7 @@
         let tickets = [];
         let timers = {};
         let currentSchedulingTicket = null;
+        let currentEditingTicket = null;
         let alertedTickets = new Set();
         let alertBeepInterval = null;
         
@@ -906,6 +1056,76 @@
             saveData();
             updateDisplay();
             closeScheduleModal();
+        }
+        
+        // Abrir modal de edição
+        function openEditModal(ticketId) {
+            const ticket = tickets.find(t => t.id === ticketId);
+            if (!ticket) return;
+            
+            currentEditingTicket = ticketId;
+            
+            // Preencher campos com dados atuais
+            document.getElementById('editTicketNumber').value = ticket.number;
+            document.getElementById('editClientName').value = ticket.client;
+            document.getElementById('editDescription').value = ticket.description || '';
+            
+            // Marcar canais selecionados
+            const hasWhatsapp = ticket.channels.some(channel => channel.includes('whatsapp'));
+            const hasSlack = ticket.channels.some(channel => channel.includes('slack'));
+            const hasGooglechat = ticket.channels.some(channel => channel.includes('google-chat'));
+            
+            document.getElementById('editWhatsapp').checked = hasWhatsapp;
+            document.getElementById('editSlack').checked = hasSlack;
+            document.getElementById('editGooglechat').checked = hasGooglechat;
+            
+            const modal = document.getElementById('editModal');
+            modal.classList.add('active');
+        }
+        
+        // Fechar modal de edição
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+            currentEditingTicket = null;
+        }
+        
+        // Confirmar edição
+        function confirmEdit() {
+            const ticket = tickets.find(t => t.id === currentEditingTicket);
+            if (!ticket) return;
+            
+            const newNumber = document.getElementById('editTicketNumber').value.trim();
+            const newClient = document.getElementById('editClientName').value.trim();
+            const newDescription = document.getElementById('editDescription').value.trim();
+            
+            if (!newNumber || !newClient) {
+                alert('Preencha o número do chamado e nome do cliente!');
+                return;
+            }
+            
+            // Verificar canais selecionados
+            const channels = [];
+            if (document.getElementById('editWhatsapp').checked) 
+                channels.push('<img src="icons/whatsapp.png" alt="WhatsApp" style="width: 14px; height: 14px;">');
+            if (document.getElementById('editSlack').checked) 
+                channels.push('<img src="icons/slack.png" alt="Slack" style="width: 14px; height: 14px;">');
+            if (document.getElementById('editGooglechat').checked) 
+                channels.push('<img src="icons/google-chat.png" alt="Google Chat" style="width: 14px; height: 14px;">');
+            
+            if (channels.length === 0) {
+                alert('Selecione pelo menos um canal de contato!');
+                return;
+            }
+            
+            // Atualizar ticket
+            ticket.number = newNumber;
+            ticket.client = newClient;
+            ticket.description = newDescription;
+            ticket.channels = channels;
+            
+            saveData();
+            updateDisplay();
+            closeEditModal();
         }
         
         // Iniciar timer para o chamado
@@ -1149,6 +1369,36 @@
             updateDisplay();
         }
         
+        // Excluir chamado
+        function deleteTicket(ticketId) {
+            const ticket = tickets.find(t => t.id === ticketId);
+            if (!ticket) return;
+            
+            if (!confirm(`Tem certeza que deseja EXCLUIR PERMANENTEMENTE o chamado ${ticket.number}?\n\nEsta ação não pode ser desfeita!`)) return;
+            
+            // Remover timer se existir
+            if (timers[ticketId]) {
+                clearInterval(timers[ticketId]);
+                delete timers[ticketId];
+            }
+            
+            // Remover alertas para este ticket
+            alertedTickets.forEach(alertKey => {
+                if (alertKey.startsWith(ticketId)) {
+                    alertedTickets.delete(alertKey);
+                }
+            });
+            
+            // Remover ticket da lista
+            const ticketIndex = tickets.findIndex(t => t.id === ticketId);
+            if (ticketIndex !== -1) {
+                tickets.splice(ticketIndex, 1);
+            }
+            
+            saveData();
+            updateDisplay();
+        }
+        
         // Reconhecer alerta
         function acknowledgeAlert(ticketId) {
             const ticket = tickets.find(t => t.id === ticketId);
@@ -1176,22 +1426,6 @@
             document.getElementById('pausedTickets').textContent = openTickets.filter(t => t.status === 'pausado' || t.status === 'fornecedor').length;
             document.getElementById('scheduledTickets').textContent = openTickets.filter(t => t.status === 'agendado').length;
             
-            const tableHeader = `
-                <table class="tickets-table">
-                    <thead>
-                        <tr>
-                            <th>Chamado</th>
-                            <th>Cliente</th>
-                            <th>Status</th>
-                            <th>Descrição</th>
-                            <th>Canais</th>
-                            <th>Timer</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
             // Group tickets by status
             const statusGroups = {
                 'atendendo': [],
@@ -1206,20 +1440,19 @@
             
             openTickets.forEach(ticket => {
                 let groupKey = ticket.status;
+                
+                // Group contact statuses together
                 if (ticket.status.startsWith('contato')) {
                     groupKey = 'contato';
                 }
                 
-                // Special handling for bloqueio constante tickets
-                if (ticket.bloqueioConstante) {
+                // Only put in bloqueio_constante group if status is acompanhamento AND it's bloqueio constante
+                if (ticket.bloqueioConstante && ticket.status === 'acompanhamento') {
                     groupKey = 'bloqueio_constante';
                 }
                 
                 if (statusGroups[groupKey]) {
                     statusGroups[groupKey].push(ticket);
-                } else {
-                    statusGroups[ticket.status] = statusGroups[ticket.status] || [];
-                    statusGroups[ticket.status].push(ticket);
                 }
             });
             
@@ -1234,16 +1467,42 @@
                 'acompanhamento': '👀 Em Acompanhamento'
             };
             
-            let tableRows = '';
+            // Define order of sections
+            const statusOrder = [
+                'atendendo',
+                'novo', 
+                'contato',
+                'pausado',
+                'fornecedor',
+                'agendado',
+                'bloqueio_constante',
+                'acompanhamento'
+            ];
             
-            Object.keys(statusGroups).forEach(status => {
+            let allTablesHTML = '';
+            
+            statusOrder.forEach(status => {
                 const tickets = statusGroups[status];
-                if (tickets.length > 0) {
-                    // Add group header
-                    tableRows += `
-                        <tr class="group-header">
-                            <td colspan="7">${statusGroupNames[status]} (${tickets.length})</td>
-                        </tr>
+                if (tickets && tickets.length > 0) {
+                    // Create separate table for each section
+                    allTablesHTML += `
+                        <div class="section-container" style="margin-bottom: 30px;">
+                            <div class="section-header" style="background: #e3f2fd; padding: 12px; border-radius: 8px 8px 0 0; text-align: center; font-weight: 600; color: #1565c0; font-size: 0.9rem; letter-spacing: 0.5px;">
+                                ${statusGroupNames[status]} (${tickets.length})
+                            </div>
+                            <table class="tickets-table" style="border-radius: 0 0 8px 8px; overflow: hidden;">
+                                <thead>
+                                    <tr>
+                                        <th>Chamado</th>
+                                        <th>Cliente</th>
+                                        <th>Status</th>
+                                        <th>Descrição</th>
+                                        <th>Canais</th>
+                                        <th>Timer</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
                     `;
                     
                     // Add tickets for this group
@@ -1295,9 +1554,12 @@
                 const hasMoreChannels = nextChannelIndex < ticket.channels.length;
                 const canPause = !hasMoreChannels && ticket.status.startsWith('contato') && diffMinutes >= waitTime;
                 
-                tableRows += `
+                allTablesHTML += `
                         <tr class="ticket-row ${shouldAlert ? 'alert' : ''}">
                             <td>
+                                <button class="btn-delete" onclick="deleteTicket('${ticket.id}')" title="Excluir chamado">
+                                    ❌
+                                </button>
                                 ${ticket.link ? 
                                     `<a href="${ticket.link}" target="_blank" class="ticket-number" style="color: #667eea; text-decoration: none;">${ticket.number}</a>` : 
                                     `<span class="ticket-number">${ticket.number}</span>`
@@ -1388,21 +1650,26 @@
                                     Finalizar Acompanhamento
                                 </button>
                             ` : ''}
+                                    <button class="btn-edit" onclick="openEditModal('${ticket.id}')" title="Editar chamado">
+                                        ✏️
+                                    </button>
                                 </div>
                             </td>
                         </tr>
                 `;
                     });
+                    
+                    // Close this table
+                    allTablesHTML += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
                 }
             });
             
-            const tableFooter = `
-                    </tbody>
-                </table>
-            `;
-            
             container.innerHTML = openTickets.length > 0 ? 
-                tableHeader + tableRows + tableFooter : 
+                allTablesHTML : 
                 '<div style="display: flex; align-items: center; justify-content: center; height: 140px; color: #666; font-size: 1rem;">Nenhum chamado ativo</div>';
         }
         
@@ -1442,7 +1709,7 @@
     </script>
 
     <footer>
-        <p>&copy; 2025 | Cadu & Lian - Todos os direitos reservados.</p>
+        <p>&copy; 2025 | @cadux64 - Todos os direitos reservados.</p>
     </footer>
 </body>
 </html>
