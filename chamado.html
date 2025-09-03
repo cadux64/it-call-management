@@ -160,6 +160,28 @@
             overflow-y: visible;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             margin-bottom: 30px;
+            position: relative;
+            /* Ensure smooth scrolling and prevent scroll interference */
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .section-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        
+        .section-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .section-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        .section-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
         }
 
         .tickets-table {
@@ -167,6 +189,8 @@
             border-collapse: collapse;
             table-layout: fixed;
             min-width: 1200px;
+            position: relative;
+            z-index: 1;
         }
         
         .tickets-table th:nth-child(1) { width: 120px; } /* Chamado */
@@ -383,6 +407,8 @@
             border: none;
             cursor: pointer;
             font-weight: 500;
+            position: relative;
+            z-index: 11;
         }
 
         .btn-secondary {
@@ -595,6 +621,8 @@
             align-items: center;
             justify-content: center;
             vertical-align: middle;
+            position: relative;
+            z-index: 12;
         }
 
         .btn-delete:hover {
@@ -609,6 +637,8 @@
             align-items: center;
             min-height: 30px;
             width: 100%;
+            position: relative;
+            z-index: 10;
         }
 
         @media (max-width: 1024px) {
@@ -828,6 +858,7 @@
         let currentEditingTicket = null;
         let alertedTickets = new Set();
         let alertBeepInterval = null;
+        let globalScrollPositions = {};
         
         // Carregar dados salvos
         function loadData() {
@@ -1228,7 +1259,12 @@
                 }
             }
             
-            updateDisplay();
+            // Only update display if there are actual status changes to reduce scroll interruption
+            const shouldUpdate = ticket.status !== ticket._lastDisplayStatus;
+            if (shouldUpdate) {
+                ticket._lastDisplayStatus = ticket.status;
+                updateDisplay();
+            }
         }
         
         // Calcular dias úteis
@@ -1415,10 +1451,45 @@
             saveData();
         }
         
+        // Store scroll positions before update
+        function saveScrollPositions() {
+            const containers = document.querySelectorAll('.section-container');
+            containers.forEach((container, index) => {
+                globalScrollPositions[index] = container.scrollLeft;
+            });
+        }
+        
+        // Restore scroll positions after update
+        function restoreScrollPositions() {
+            setTimeout(() => {
+                const containers = document.querySelectorAll('.section-container');
+                containers.forEach((container, index) => {
+                    if (globalScrollPositions[index] !== undefined) {
+                        container.scrollLeft = globalScrollPositions[index];
+                    }
+                });
+            }, 50); // Increased delay to ensure DOM is fully rendered
+        }
+        
+        // Add scroll event listeners to save positions continuously
+        function addScrollListeners() {
+            setTimeout(() => {
+                const containers = document.querySelectorAll('.section-container');
+                containers.forEach((container, index) => {
+                    container.addEventListener('scroll', () => {
+                        globalScrollPositions[index] = container.scrollLeft;
+                    });
+                });
+            }, 100);
+        }
+        
         // Atualizar exibição
         function updateDisplay() {
             const container = document.getElementById('ticketsContainer');
             const openTickets = tickets.filter(t => t.status !== 'fechado');
+            
+            // Save current scroll positions
+            saveScrollPositions();
             
             // Atualizar estatísticas
             document.getElementById('totalTickets').textContent = openTickets.length;
@@ -1671,6 +1742,10 @@
             container.innerHTML = openTickets.length > 0 ? 
                 allTablesHTML : 
                 '<div style="display: flex; align-items: center; justify-content: center; height: 140px; color: #666; font-size: 1rem;">Nenhum chamado ativo</div>';
+            
+            // Restore scroll positions and add listeners
+            restoreScrollPositions();
+            addScrollListeners();
         }
         
         // Monitorar mudança no tipo de chamado
@@ -1704,8 +1779,8 @@
         // Carregar dados ao iniciar
         loadData();
         
-        // Atualizar display a cada 30 segundos
-        setInterval(updateDisplay, 30000);
+        // Atualizar display a cada 2 minutos para reduzir interrupções
+        setInterval(updateDisplay, 120000);
     </script>
 
     <footer>
